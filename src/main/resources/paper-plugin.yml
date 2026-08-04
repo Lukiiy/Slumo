@@ -1,0 +1,9 @@
+name: Slumo
+description: $description
+version: '${version}'
+
+main: me.lukiiy.slumo.Slumo
+api-version: '26.1.1'
+load: POSTWORLD
+
+authors: [ Lukiiy ]
