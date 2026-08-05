@@ -26,7 +26,7 @@ public class MapMaker {
     public record Platform(Structure structure, int originX, int originY, int originZ, int sizeX, int sizeY, int sizeZ) {}
 
     public MapMaker() throws IOException {
-        File dir = new File(Bukkit.getServer().getWorldContainer(),"slumo");
+        File dir = new File(Bukkit.getServer().getWorldContainer(),"tasffa");
 
         dir.mkdirs();
 
