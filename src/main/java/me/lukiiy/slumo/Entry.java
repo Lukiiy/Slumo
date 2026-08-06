@@ -16,8 +16,7 @@ public class Entry extends GameEntry {
             new Option<>(Kits.SUMO, Kits.SUMO.getName())
     )));
 
-
     public Entry() {
-        super("tasffa", "Slumo", Game::new, Component.text("Parkour Tag").color(FDefaults.LIME));
+        super("tasffa", "Slumo", Game::new, Component.text("Slumo").color(FDefaults.DARK_GRAY));
     }
 }
