@@ -2,32 +2,35 @@ package me.lukiiy.slumo;
 
 import me.lukiiy.flow.*;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.title.Title;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.Duration;
+import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Stream;
 
 public class Game extends Minigame {
     private World world;
     public AtomicBoolean active = new AtomicBoolean(false);
 
     @Override
-    protected void onStart() {
+    protected void prepare() {
         world = Slumo.getInstance().getMapMaker().create();
 
-        if (world == null) {
-            broadcast(Component.text("Failed to create map.").color(NamedTextColor.RED));
-            stop();
+        if (world == null) throw new MinigameException("An error occurred when creating the world");
+    }
 
-            return;
-        }
-
+    @Override
+    protected void onStart() {
         Location spawn = world.getSpawnLocation();
 
         forEachPlayer(fp -> {
@@ -93,7 +96,19 @@ public class Game extends Minigame {
         BaseLobby lobby = Flow.getInstance().getManager().getLobby();
         if (lobby != null) forEachPlayer(lobby::sendToLobby);
 
-        if (world != null) Bukkit.getServer().unloadWorld(world, false);
+        if (world != null) {
+            File wFolder = world.getWorldFolder();
+
+            Bukkit.getServer().unloadWorld(world, false);
+
+            if (wFolder.exists()) {
+                try (Stream<Path> stream = Files.walk(wFolder.toPath())) {
+                    stream.sorted(Comparator.reverseOrder()).forEach(p -> p.toFile().delete());
+                } catch (IOException e) {
+                    Slumo.getInstance().getLogger().warning("Could not delete instanced world " + wFolder.getName() + "! " + e.getMessage());
+                }
+            }
+        }
     }
 
     public Entry entry() {
