@@ -1,18 +1,12 @@
 package me.lukiiy.slumo;
 
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.World;
-import org.bukkit.WorldCreator;
-import org.bukkit.block.Block;
+import org.bukkit.*;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.structure.Mirror;
 import org.bukkit.block.structure.StructureRotation;
 import org.bukkit.generator.ChunkGenerator;
-import org.bukkit.generator.WorldInfo;
 import org.bukkit.structure.Structure;
 import org.bukkit.util.BlockVector;
-import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
@@ -42,16 +36,21 @@ public class MapMaker {
             int maxZ = -1;
 
             for (BlockState b : structure.getPalettes().getFirst().getBlocks()) {
-                if (b.getBlock().isEmpty()) continue;
+                if (b.getBlockData().getMaterial().isAir()) continue;
 
-                Location loc = b.getBlock().getLocation();
+                Location loc = b.getLocation();
 
-                minX = Math.min(minX, loc.blockX());
-                minY = Math.min(minY, loc.blockY());
-                minZ = Math.min(minZ, loc.blockZ());
-                maxX = Math.max(maxX, loc.blockX());
-                maxY = Math.max(maxY, loc.blockY());
-                maxZ = Math.max(maxZ, loc.blockZ());
+                int x = loc.getBlockX();
+                int y = loc.getBlockY();
+                int z = loc.getBlockZ();
+
+                minX = Math.min(minX, x);
+                minY = Math.min(minY, y);
+                minZ = Math.min(minZ, z);
+
+                maxX = Math.max(maxX, x);
+                maxY = Math.max(maxY, y);
+                maxZ = Math.max(maxZ, z);
             }
 
             if (maxX != -1) platforms.add(new Platform(structure, -minX, -minY, -minZ, maxX - minX + 1, maxY - minY + 1, maxZ - minZ + 1));
@@ -59,10 +58,20 @@ public class MapMaker {
     }
 
     public World create() {
-        String name = "tasffa_" + UUID.randomUUID();
+        WorldCreator creator = new WorldCreator("tasffa_" + UUID.randomUUID()).generator(new VoidGen()).generateStructures(false).environment(World.Environment.NORMAL).type(WorldType.FLAT);
 
-        World world = new WorldCreator("tasffa_" + UUID.randomUUID()).generator(new VoidGen()).createWorld();
+        World world = creator.createWorld();
         if (world == null) return null;
+
+        world.setAutoSave(false);
+        world.setGameRule(GameRules.SPAWN_MOBS, false);
+        world.setGameRule(GameRules.ADVANCE_TIME, false);
+        world.setGameRule(GameRules.RANDOM_TICK_SPEED, 0);
+        world.setGameRule(GameRules.ADVANCE_WEATHER, false);
+        world.setGameRule(GameRules.SPECTATORS_GENERATE_CHUNKS, false);
+
+        world.setViewDistance(4);
+        world.setSimulationDistance(4);
 
         Platform platform = platforms.get(random.nextInt(platforms.size()));
 
@@ -81,37 +90,5 @@ public class MapMaker {
         return world;
     }
 
-    private static final class VoidGen extends ChunkGenerator {
-        @Override
-        public void generateSurface(@NotNull WorldInfo worldInfo, @NotNull Random random, int chunkX, int chunkZ, @NotNull ChunkData chunkData) {}
-
-        @Override
-        public boolean shouldGenerateNoise() {
-            return false;
-        }
-
-        @Override
-        public boolean shouldGenerateCaves() {
-            return false;
-        }
-
-        @Override
-        public boolean shouldGenerateDecorations() {
-            return false;
-        }
-
-        @Override
-        public boolean shouldGenerateMobs() {
-            return false;
-        }
-
-        @Override
-        public boolean shouldGenerateStructures() {
-            return false;
-        }
-
-        @Override
-        public void generateBedrock(@NotNull WorldInfo worldInfo, @NotNull Random random, int chunkX, int chunkZ, @NotNull ChunkData chunkData) {}
-    }
-
+    private static final class VoidGen extends ChunkGenerator {}
 }
