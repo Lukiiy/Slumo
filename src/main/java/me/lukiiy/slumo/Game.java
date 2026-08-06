@@ -7,6 +7,7 @@ import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.title.Title;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Listener;
 
 import java.time.Duration;
 import java.util.List;
@@ -51,6 +52,11 @@ public class Game extends Minigame {
             Bukkit.getServer().getServerTickManager().setTickRate(entry().tickRate.getValue());
             active.set(true);
         }).start();
+    }
+
+    @Override
+    protected List<Listener> listeners() {
+        return List.of(new Listen(this));
     }
 
     public List<FlowPlayer> getAlive() {
