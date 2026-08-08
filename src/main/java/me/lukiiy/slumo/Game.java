@@ -52,6 +52,8 @@ public class Game extends Minigame {
 
             forEachPlayer(it -> it.getPlayer().showTitle(Title.title(Component.text("Starting in").color(FDefaults.GRAY), Component.text((c + 1) + " seconds!").color(finalColor), Title.Times.times(Duration.ZERO, Duration.ofSeconds(1), Duration.ofSeconds(1)))));
         }, () -> {
+            forEachPlayer(it -> it.getPlayer().clearTitle());
+
             Bukkit.getServer().getServerTickManager().setTickRate(entry().tickRate.getValue());
             active.set(true);
         }).start();
