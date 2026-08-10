@@ -50,7 +50,7 @@ public class Listen implements Listener {
         if (!game.active.get()) {
             e.setCancelled(true);
         } else {
-            if (MaterialSetTag.WOOL.isTagged(e.getBlock().getType())) e.setCancelled(true);
+            if (!MaterialSetTag.WOOL.isTagged(e.getBlock().getType())) e.setCancelled(true);
 
             e.setDropItems(true);
         }
