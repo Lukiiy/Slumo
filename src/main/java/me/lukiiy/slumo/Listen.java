@@ -51,9 +51,9 @@ public class Listen implements Listener {
             e.setCancelled(true);
         } else {
             if (!MaterialSetTag.WOOL.isTagged(e.getBlock().getType())) e.setCancelled(true);
-
-            e.setDropItems(true);
         }
+
+        e.setDropItems(false);
     }
 
     @EventHandler
